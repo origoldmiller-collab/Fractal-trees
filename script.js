@@ -35,10 +35,10 @@ let tree =[];
 function setup() {
   createCanvas(windowWidth-30, windowHeight-30);
   background(30);
-  tree.push(new Branch(width/2, height, 100, 45));
-  for (let i = 0; i < 2; i++){
-    tree.push(new Branch(tree[i]+));
-  }
+  angleMode(DEGREES);
+  tree.push(new Branch(width/2, height, width/2, height/2));
+  tree[0].buildTree(height/4, -45);
+  console.log(tree);
 }
 
 function draw() {
@@ -49,15 +49,21 @@ function draw() {
 }
 
 class Branch {
-  constructor(startingx, startingy, disance, angle,) {
-    this.starx = startingx;
-    this.stary = startingy;
-    this.x2 = x2;
-    this.y2 = y2;
+  constructor(startingx, startingy, x2, y2) {
+    this.x1 = startingx;
+    this.y1 = startingy;
+    this.x2 = x2 
+    this.y2 = y2
   }
   display() {
-    stroke(255, 0 ,255)
+    stroke(random(255), random(255) ,random(255));
     strokeWeight(5)
-    line(this.x1, this.y1, this.x2, this.y2)
+    line(this.x1, this.y1, this.x2, this.y2);
   }
+  buildTree(distance, angle){
+  if (distance >= 1){
+    tree.push (new Branch(tree[tree.length-1].x2, tree[tree.length-1].y2, tree[tree.length-1].x2 + cos(angle)*distance/2, tree[tree.length-1].y2 + sin(angle)*distance/2));
+    tree[tree.length-2].buildTree(distance/2, angle+45)
+  }
+}
 }
