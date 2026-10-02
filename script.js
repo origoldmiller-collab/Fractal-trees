@@ -1,43 +1,25 @@
-// checkKeys() {
-  //   let forceMagnitude = 12;
-    
-  //   if (keyIsDown(LEFT_ARROW))  this.applyForce(createVector(-forceMagnitude, 0));
-  //   if (keyIsDown(RIGHT_ARROW)) this.applyForce(createVector(forceMagnitude, 0));
-  //   if (keyIsDown(UP_ARROW))    this.applyForce(createVector(0, -forceMagnitude));
-  //   if (keyIsDown(DOWN_ARROW))  this.applyForce(createVector(0, forceMagnitude));
-  // }
-  // The "Force" pattern: Force adds to Acceleration
-  // applyForce(force) {
-  //   this.acc.add(force);
-  // }
-
-  // update() {
-  //   // 1. Acceleration changes Velocity
-  //   this.vel.add(this.acc);
-    
-  //   // 2. Limit the speed so it doesn't go infinite
-  //   this.vel.limit(this.topSpeed);
-    
-  //   // 3. Velocity changes Position
-  //   this.pos.add(this.vel);
-    
-  //   // 4. Apply friction (velocity decay)
-  //   this.vel.mult(this.friction);
-    
-  //   // 5. Reset acceleration for the next frame
-  //   this.acc.mult(0);
-  // }
-
 //preview: python -m http.server
-
+const LENGHT_MULT = 0.6;
+const LENGTH_DIST = 450;
+// const NUM_BRANCHES = 2
+const BASE_ANGLE = -45;
+const ANGLE_ADD = -20;
+const L_BRANCH_SPLIT_DIST = -20;
+const R_BRANCH_SPLIT_DIST = -70;
+const TRUNK_HEIGHT = 250;
+const X_POS = 1000;
+const RED_MULT = 0
+const GREEN_MULT = -20
+const BLUE_MULT = -50
+const BASE_COlOUR = [255, 255, 255]
 let tree =[];
 
 function setup() {
   createCanvas(windowWidth-30, windowHeight-30);
   background(30);
   angleMode(DEGREES);
-  tree.push(new Branch(width/2, height, width/2, height/2));
-  tree[0].buildTree(height/4, -45);
+  tree.push(new Branch(X_POS, height, X_POS, height-TRUNK_HEIGHT, BASE_COlOUR[0], BASE_COlOUR[1], BASE_COlOUR[2]));
+  buildTree(LENGTH_DIST, BASE_ANGLE, X_POS, height-TRUNK_HEIGHT, BASE_COlOUR[0], BASE_COlOUR[1], BASE_COlOUR[2]);
   console.log(tree);
 }
 
@@ -47,23 +29,28 @@ function draw() {
       tree[i].display();
   }
 }
-
+ function buildTree(distance, angle, x2, y2, r, g, b){
+    if (distance >= 1){
+      tree.push (new Branch(x2, y2, x2+cos(angle+R_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, y2+sin(angle+R_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, r+RED_MULT, g+GREEN_MULT, b+BLUE_MULT));
+      buildTree(distance*LENGHT_MULT, angle+ANGLE_ADD, x2+cos(angle+R_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, y2+sin(angle+R_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, r+RED_MULT, g+GREEN_MULT, b+BLUE_MULT);
+      
+      tree.push (new Branch(x2, y2, x2 + cos(angle+L_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, y2+sin(angle+L_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, r+RED_MULT, g+GREEN_MULT, b+BLUE_MULT));
+      buildTree(distance*LENGHT_MULT, angle-ANGLE_ADD, x2 + cos(angle+L_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, y2+sin(angle+L_BRANCH_SPLIT_DIST)*distance*LENGHT_MULT, r+RED_MULT, g+GREEN_MULT, b+BLUE_MULT);
+  }
+}
 class Branch {
-  constructor(startingx, startingy, x2, y2) {
+  constructor(startingx, startingy, x2, y2, red, green, blue) {
     this.x1 = startingx;
     this.y1 = startingy;
     this.x2 = x2 
     this.y2 = y2
+    this.red = red
+    this.green = green
+    this.blue = blue
   }
   display() {
-    stroke(random(255), random(255) ,random(255));
-    strokeWeight(5)
-    line(this.x1, this.y1, this.x2, this.y2);
-  }
-  buildTree(distance, angle){
-  if (distance >= 1){
-    tree.push (new Branch(tree[tree.length-1].x2, tree[tree.length-1].y2, tree[tree.length-1].x2 + cos(angle)*distance/2, tree[tree.length-1].y2 + sin(angle)*distance/2));
-    tree[tree.length-2].buildTree(distance/2, angle+45)
-  }
-}
+  stroke(this.red, this.green, this.blue);
+  strokeWeight(5)
+  line(this.x1, this.y1, this.x2, this.y2);
+ }
 }
